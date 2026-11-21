@@ -3,6 +3,7 @@ package com.hmdp.utils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -12,10 +13,11 @@ public class RedisIdWorker {
     private static final long BEGIN_TIMESTAMP = 999L;
     private static final int COUNT_BTTS = 32;
 
+    @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    public StringRedisTemplate getStringRedisTemplate() {
-        return stringRedisTemplate;
+    public void setStringRedisTemplate(StringRedisTemplate stringRedisTemplate) {
+        this.stringRedisTemplate = stringRedisTemplate;
     }
 
     public long nextId(String keyPrefix){
@@ -28,7 +30,7 @@ public class RedisIdWorker {
         //2.1获取当前日期，精确到天
         String data = now.format(DateTimeFormatter.ofPattern("yyyy:MM:dd"));
         //2.2自增长
-        Long count = stringRedisTemplate.opsForValue().increment("icr" + keyPrefix +":" + data);
+        long count = stringRedisTemplate.opsForValue().increment("icr" + keyPrefix +":" + data);
 
         //3.拼接并返回
         return timetamp << COUNT_BTTS | count;
